@@ -3,21 +3,56 @@
 // THEN I can enter up to three characters
 // logosvg & package json
 
-const filesystem = require('.node_modules/fs-extra')
+const fs = require('fs')
+const inquirer = require('inquirer')
+const { Circle, Triangle, Square } = require('./lib/shapes.js')
 
-// WHEN I am prompted for the text color
-// THEN I can enter a color keyword (OR a hexadecimal number)
+const questions = [
+    {
+        type: 'input',
+        name: 'text',
+        message: 'What text would you like to add to your logo?'
+    },
+    {
+        type: 'input',
+        name: 'textColor',
+        message: 'What color would you like your text to be?'
+    },
+    {
+        type: 'input',
+        name: 'shapeColor',
+        message: 'What shape color would you like to add to your logo?'
+    },
+    {
+        type: 'list',
+        name: 'shape',
+        message: 'What shape would you like your logo to be?',
+        choices: ['circle', 'square', 'triangle']
+    }
+]
+
+inquirer.prompt(questions)
+.then((response)=> {
+   let shape;
+
+   switch (response.shape) {
+         case 'circle':
+            shape = new Circle(response.shapeColor, response.text, response.textColor)
+            break;
+        case 'square':
+            shape = new Square(response.shapeColor, response.text, response.textColor)
+            break;
+        case 'triangle':
+            shape = new Triangle(response.shapeColor, response.text, response.textColor)
+            break;
+   }
+
+   fs.writeFile('./dist/logo.svg', shape.render(), (err) => {
+         if (err) throw err;
+         console.log('The file has been saved!');
+   })
 
 
-// WHEN I am prompted for a shape
-// THEN I am presented with a list of shapes to choose from: circle, triangle, and square
+})
 
-// WHEN I am prompted for the shape's color
-// THEN I can enter a color keyword (OR a hexadecimal number)
 
-// WHEN I have entered input for all the prompts
-// THEN an SVG file is created named `logo.svg`
-// AND the output text "Generated logo.svg" is printed in the command line
-
-// WHEN I open the `logo.svg` file in a browser
-// THEN I am shown a 300x200 pixel image that matches the criteria I entered
